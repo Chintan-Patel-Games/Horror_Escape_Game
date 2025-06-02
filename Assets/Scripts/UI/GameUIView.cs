@@ -45,4 +45,3 @@ public class GameUIView : MonoBehaviour
         redVignette.CrossFadeAlpha(0, 5, false);
     }
 }
-
