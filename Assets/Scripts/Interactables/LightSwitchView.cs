@@ -1,33 +1,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class LightSwitchView : MonoBehaviour, IInteractable
+public class LightSwitchView : MonoBehaviour, IInteractable
 {
     [SerializeField] private List<Light> lightsources = new List<Light>();
     private SwitchState currentState;
 
-    private void OnEnable()
-    {
-        EventService.Instance.LightSwitchToggleEvent.AddListener(OnLightsToggled);
-        EventService.Instance.LightsOffByGhostEvent.AddListener(OnLightsOffByGhostEvent);
-    }
+    public delegate void LightSwitchDelegate();  // Signture for the delegate
+    public static LightSwitchDelegate lightSwitch; // Delegate instance
 
-    private void OnDisable()
-    {
-        EventService.Instance.LightSwitchToggleEvent.RemoveListener(OnLightsToggled);
-        EventService.Instance.LightsOffByGhostEvent.RemoveListener(OnLightsOffByGhostEvent);
-    }
+    private void OnEnable() => lightSwitch += OnLightSwitchToggled; // Subscribe to the delegate
 
-    private void Start()
+    private void Start() => currentState = SwitchState.Off;
+
+    public void Interact() => lightSwitch.Invoke();
+
+    private void OnLightSwitchToggled()
     {
-        currentState = SwitchState.Off;
-    }
-    public void Interact()
-    {
+        toggleLights();
         GameService.Instance.GetInstructionView().HideInstruction();
-        EventService.Instance.LightSwitchToggleEvent.InvokeEvent();
+        GameService.Instance.GetSoundView().PlaySoundEffects(SoundType.SwitchSound);
     }
-    private void ToggleLights()
+
+    private void toggleLights()
     {
         bool lights = false;
 
@@ -44,32 +39,8 @@ public partial class LightSwitchView : MonoBehaviour, IInteractable
             case SwitchState.Unresponsive:
                 break;
         }
-        foreach (Light lightSource in lightsources)
-        {
-            lightSource.enabled = lights;
-        }
-    }
-
-    private void SetLights(bool lights)
-    {
-        if (lights)
-            currentState = SwitchState.On;
-        else
-            currentState = SwitchState.Off;
 
         foreach (Light lightSource in lightsources)
-        {
             lightSource.enabled = lights;
-        }
-    }
-    private void OnLightsOffByGhostEvent()
-    {
-        GameService.Instance.GetSoundView().PlaySoundEffects(SoundType.SwitchSound);
-        SetLights(false);
-    }
-    private void OnLightsToggled()
-    {
-        ToggleLights();
-        GameService.Instance.GetSoundView().PlaySoundEffects(SoundType.SwitchSound);
     }
 }
