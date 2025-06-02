@@ -46,7 +46,15 @@ public class GameUIView : MonoBehaviour
 
     public void UpdateInsanity(float playerSanity) => insanityImage.rectTransform.localScale = new Vector3(1, playerSanity, 1);
     private void OnKeyEquipped(int keys) => keysFoundText.SetText($"Keys Found: {keys}/3");
-    private void OnQuitButtonClicked() => Application.Quit();
+    private void OnQuitButtonClicked()
+    {
+        #if UNITY_WEBGL
+        // Show a native browser alert
+        Application.ExternalEval("alert('Thank you for playing! Please close the browser tab to exit.');");
+        #else
+        Application.Quit();
+        #endif
+    }
     private void OnTryAgainButtonClicked() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
     private void SetRedVignette()
@@ -58,14 +66,27 @@ public class GameUIView : MonoBehaviour
 
     private void OnPlayerDeath()
     {
+        unlockCursor();
         gameEndText.SetText("Game Over");
         gameEndPanel.SetActive(true);
     }
 
     private void OnPlayerEscaped()
     {
+        unlockCursor();
         gameEndText.SetText("You Escaped");
         gameEndPanel.SetActive(true);
+    }
+
+    private void unlockCursor()
+    {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        #endif
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
 

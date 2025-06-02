@@ -9,7 +9,15 @@ public class PlayerView : MonoBehaviour
     private Rigidbody playerRigidbody;
     private PlayerController playerController;
 
-    private void Start() => playerRigidbody = GetComponent<Rigidbody>();
+    private void Start()
+    {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        #endif
+
+        playerRigidbody = GetComponent<Rigidbody>();
+    }
 
     private void Update()
     {
