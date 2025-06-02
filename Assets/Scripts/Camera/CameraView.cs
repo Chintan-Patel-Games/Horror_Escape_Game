@@ -13,16 +13,18 @@ public class CameraView : MonoBehaviour
 
     private void OnEnable()
     {
-        EventService.Instance.OnLightsOffByGhostEvent.AddListener(Shake);
-        EventService.Instance.OnPlayerDeathEvent.AddListener(Shake);
-        EventService.Instance.OnRatRushEvent.AddListener(Shake);
+        EventService.Instance.OnLightsOffByGhostEvent.AddListener(shake);
+        EventService.Instance.OnPlayerDeathEvent.AddListener(shake);
+        EventService.Instance.OnRatRushEvent.AddListener(shake);
+        EventService.Instance.OnSkullDropEvent.AddListener(shake);
     }
 
     private void OnDisable()
     {
-        EventService.Instance.OnLightsOffByGhostEvent.RemoveListener(Shake);
-        EventService.Instance.OnPlayerDeathEvent.RemoveListener(Shake);
-        EventService.Instance.OnRatRushEvent.RemoveListener(Shake);
+        EventService.Instance.OnLightsOffByGhostEvent.RemoveListener(shake);
+        EventService.Instance.OnPlayerDeathEvent.RemoveListener(shake);
+        EventService.Instance.OnRatRushEvent.RemoveListener(shake);
+        EventService.Instance.OnSkullDropEvent.RemoveListener(shake);
     }
 
     private void Start()
@@ -48,7 +50,7 @@ public class CameraView : MonoBehaviour
         }
     }
 
-    private void Shake()
+    private void shake()
     {
         if (shakeCorroutine != null)
             stopCoroutine(shakeCorroutine);
